@@ -261,11 +261,11 @@ sub gexpr
   {
     if ($CltFlag)
     {
-      sendData('lusclt.reads',    'reads/sec',    $lustreCltReadTot/$intSecs);
-      sendData('lusclt.readkbs',  'readkbs/sec',  $lustreCltReadKBTot/$intSecs);
-      sendData('lusclt.writes',   'writes/sec',   $lustreCltWriteTot/$intSecs);
-      sendData('lusclt.writekbs', 'writekbs/sec', $lustreCltWriteKBTot/$intSecs);
-      sendData('lusclt.numfs',    'filesystems',  $NumLustreFS);
+      sendData('lusclt.reads',      'reads/sec',   $lustreCltReadTot/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'Client Reads', 'DESC' => 'Number of reads per second'});
+      sendData('lusclt.readbytes',  'bytes/sec',   ($lustreCltReadKBTot*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'Client Read Bytes', 'DESC' => 'Number of bytes read per second'});
+      sendData('lusclt.writes',     'writes/sec',  $lustreCltWriteTot/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'Client Writes', 'DESC' => 'Number of writes per second'});
+      sendData('lusclt.writebytes', 'bytes/sec',   ($lustreCltWriteKBTot*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'Client Write Bytes', 'DESC' => 'Number of bytes read per second'});
+      sendData('lusclt.numfs',      'filesystems', $NumLustreFS, {'GROUP' => 'lustre', 'TITLE' => 'Filesystems', 'DESC' => 'Number of filesystems'});
     }
 
     if ($MdsFlag)
@@ -275,18 +275,18 @@ sub gexpr
       my $varName=($cfsVersion lt '1.6.5') ? 'reint' : 'unlink';
       my $varVal= ($cfsVersion lt '1.6.5') ? $lustreMdsReint : $lustreMdsReintUnlink;
 
-      sendData('lusmds.gattrP',    'gattrP/sec',   $getattrPlus/$intSecs);
-      sendData('lusmds.sattrP',    'sattrP/sec',   $setattrPlus/$intSecs);
-      sendData('lusmds.sync',      'sync/sec',     $lustreMdsSync/$intSecs);
-      sendData("lusmds.$varName",  "$varName/sec", $varVal/$intSecs);
+      sendData('lusmds.gattrP',    'gattrP/sec',   $getattrPlus/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'MDS Getattr+', 'DESC' => 'Number of getattr requests per second'});
+      sendData('lusmds.sattrP',    'sattrP/sec',   $setattrPlus/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'MDS Setattr+', 'DESC' => 'Number of setattr requests per second'});
+      sendData('lusmds.sync',      'sync/sec',     $lustreMdsSync/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'MDS Sync', 'DESC' => 'Number of sync requests per second'});
+      sendData("lusmds.$varName",  "$varName/sec", $varVal/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'MDS $varName', 'DESC' => 'Number of $varName requests per second'});
     }
 
     if ($OstFlag)
     {
-      sendData('lusost.reads',    'reads/sec',    $lustreReadOpsTot/$intSecs);
-      sendData('lusost.readkbs',  'readkbs/sec',  $lustreReadKBytesTot/$intSecs);
-      sendData('lusost.writes',   'writes/sec',   $lustreWriteOpsTot/$intSecs);
-      sendData('lusost.writekbs', 'writekbs/sec', $lustreWriteKBytesTot/$intSecs);
+      sendData('lusost.reads',      'reads/sec',  $lustreReadOpsTot/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Reads', 'DESC' => 'Number of reads per second'});
+      sendData('lusost.readbytes',  'bytes/sec',  ($lustreReadKBytesTot*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Read Bytes', 'DESC' => 'Number of bytes read per second'});
+      sendData('lusost.writes',     'writes/sec', $lustreWriteOpsTot/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Writes', 'DESC' => 'Number of writes per second'});
+      sendData('lusost.writebytes', 'bytes/sec',  ($lustreWriteKBytesTot*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Write Bytes', 'DESC' => 'Number of bytes write per second'});
     }
   }
 
@@ -299,20 +299,20 @@ sub gexpr
       {
         for (my $i=0; $i<$NumLustreFS; $i++)
         {
-          sendData("lusost.reads.$lustreCltFS[$i]",    'reads/sec',    $lustreCltRead[$i]/$intSecs);
-	  sendData("lusost.readkbs.$lustreCltFS[$i]",  'readkbs/sec',  $lustreCltReadKB[$i]/$intSecs);
-          sendData("lusost.writes.$lustreCltFS[$i]",   'writes/sec',   $lustreCltWrite[$i]/$intSecs);
-          sendData("lusost.writekbs.$lustreCltFS[$i]", 'writekbs/sec', $lustreCltWriteKB[$i]/$intSecs);
+          sendData("lusost.reads.$lustreCltFS[$i]",      'reads/sec',  $lustreCltRead[$i]/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Reads '.$lustreCltFS[$i], 'DESC' => 'Number of reads per second'});
+	  sendData("lusost.readbytes.$lustreCltFS[$i]",  'bytes/sec',  ($lustreCltReadKB[$i]*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Read Bytes '.$lustreCltFS[$i], 'DESC' => 'Number of bytes read per second'});
+          sendData("lusost.writes.$lustreCltFS[$i]",     'writes/sec', $lustreCltWrite[$i]/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Writes '.$lustreCltFS[$i], 'DESC' => 'Number of writes per second'});
+          sendData("lusost.writebytes.$lustreCltFS[$i]", 'bytes/sec',  ($lustreCltWriteKB[$i]*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Write Bytes '.$lustreCltFS[$i], 'DESC' => 'Number of bytes write per second'});
         }
       }
       else
       {
         for (my $i=0; $i<$NumLustreCltOsts; $i++)
         {
-          sendData("lusost.reads.$lustreCltOsts[$i]",    'reads/sec',    $lustreCltLunRead[$i]/$intSecs);
-          sendData("lusost.readkbs.$lustreCltOsts[$i]",  'readkbs/sec',  $lustreCltLunReadKB[$i]/$intSecs);
-          sendData("lusost.writes.$lustreCltOsts[$i]",   'writes/sec',   $lustreCltLunWrite[$i]/$intSecs);
-          sendData("lusost.writekbs.$lustreCltOsts[$i]", 'writekbs/sec', $lustreCltLunWriteKB[$i]/$intSecs);
+          sendData("lusost.reads.$lustreCltOsts[$i]",      'reads/sec',  $lustreCltLunRead[$i]/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Reads '.$lustreCltOsts[$i], 'DESC' => 'Number of reads per second'});
+          sendData("lusost.readbytes.$lustreCltOsts[$i]",  'bytes/sec',  ($lustreCltLunReadKB[$i]*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Read Bytes '.$lustreCltOsts[$i], 'DESC' => 'Number of bytes read per second'});
+          sendData("lusost.writes.$lustreCltOsts[$i]",     'writes/sec', $lustreCltLunWrite[$i]/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Writes '.$lustreCltOsts[$i], 'DESC' => 'Number of writes per second'});
+          sendData("lusost.writebytes.$lustreCltOsts[$i]", 'bytes/sec',  ($lustreCltLunWriteKB[$i]*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Write Bytes '.$lustreCltOsts[$i], 'DESC' => 'Number of bytes write per second'});
         }
       }
     }
@@ -321,10 +321,10 @@ sub gexpr
     {
       for ($i=0; $i<$NumOst; $i++)
       {
-        sendData("lusost.reads.$lustreOsts[$i]",    'reads/sec',    $lustreReadOps[$i]/$intSecs);
-        sendData("lusost.readkbs.$lustreOsts[$i]",  'readkbs/sec',  $lustreReadKBytes[$i]/$intSecs);
-        sendData("lusost.writes.$lustreOsts[$i]",   'writes/sec',   $lustreWriteOps[$i]/$intSecs);
-        sendData("lusost.writekbs.$lustreOsts[$i]", 'writekbs/sec', $lustreWriteKBytes[$i]/$intSecs);
+        sendData("lusost.reads.$lustreOsts[$i]",      'reads/sec',  $lustreReadOps[$i]/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Reads '.$lustreOsts[$i], 'DESC' => 'Number of reads per second'});
+        sendData("lusost.readbytes.$lustreOsts[$i]",  'bytes/sec',  ($lustreReadKBytes[$i]*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Read Bytes '.$lustreOsts[$i], 'DESC' => 'Number of bytes read per second'});
+        sendData("lusost.writes.$lustreOsts[$i]",     'writes/sec', $lustreWriteOps[$i]/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Writes '.$lustreOsts[$i], 'DESC' => 'Number of writes per second'});
+        sendData("lusost.writebytes.$lustreOsts[$i]", 'bytes/sec',  ($lustreWriteKBytes[$i]*1024)/$intSecs, {'GROUP' => 'lustre', 'TITLE' => 'OST Write Bytes '.$lustreOsts[$i], 'DESC' => 'Number of bytes write per second'});
       }
     }
   }
@@ -461,11 +461,11 @@ sub gexpr
       $kbOutT= $ibTxKBTot;
       $pktOutT=$ibTxTot;
     }
-   
-    sendData("iconnect.kbin",   'kb/sec',  $kbInT/$intSecs);
-    sendData("iconnect.pktin",  'pkt/sec', $pktInT/$intSecs);
-    sendData("iconnect.kbout",  'kb/sec',  $kbOutT/$intSecs);
-    sendData("iconnect.pktout", 'pkt/sec', $pktOutT/$intSecs);
+  
+    sendData("iconnect.bytesin",  'bytes/sec', ($kbInT*1024)/$intSecs, {'GROUP' => 'interconnect', 'TITLE' => 'Bytes Received', 'DESC' => 'Number of bytes in per second'});
+    sendData("iconnect.pktin",    'pkt/sec',   $pktInT/$intSecs, {'GROUP' => 'interconnect', 'TITLE' => 'Packets received', 'DESC' => 'Number of packets in per second'});
+    sendData("iconnect.bytesout", 'bytes/sec', ($kbOutT*1024)/$intSecs, {'GROUP' => 'interconnect', 'TITLE' => 'Bytes Sent', 'DESC' => 'Number of bytes out per second'});
+    sendData("iconnect.pktout",   'pkt/sec',   $pktOutT/$intSecs, {'GROUP' => 'interconnect', 'TITLE' => 'Packets Sent', 'DESC' => 'Number of packets out per second'});
   }
 
   if ($gexSubsys=~/E/i && $gexGFlag!=1)
@@ -518,6 +518,7 @@ sub sendData
   my $name=shift;
   my $units=shift;
   my $value=shift;
+  my $extra_data=shift;
 
   $value=int($value);
 
@@ -564,7 +565,8 @@ sub sendData
   if (!$gexCOFlag || $value!=$gexDataLast{$name} || $gexTTL{$name}==1)
   {
     $valSentFlag=1;
-    sendMetaPacket($name, $units);
+    # Metadata send interval should be configurable
+    sendMetaPacket($name, $units, $extra_data);
     sendDataPacket($name, $value);    
     $gexDataLast{$name}=$value;
   }
@@ -605,6 +607,7 @@ sub sendMetaPacket
 {
   my $name= shift;
   my $units=shift;
+  my $extra_data=shift;
 
   my $string='';
   $string.=pack('N', 0x80);
@@ -625,7 +628,23 @@ sub sendMetaPacket
   $string.=pack('N', 3);         # slope
   $string.=pack('N', 2*$gexTTL*$gexInterval);   # time to live
   $string.=pack('N', 0);         # dmax
-  $string.=pack('N', 0);
+
+  # Extra data : TITLE / DESC / GROUP
+  my $extra_count = 0;
+  my $extra_string = '';
+
+  if (defined $extra_data) {
+    while ( my ($key, $value) = each(%$extra_data) ) {
+      $extra_string.=pack('N', length($key));
+      $extra_string.=packString($key);
+      $extra_string.=pack('N', length($value));
+      $extra_string.=packString($value);
+      $extra_count++;
+    }
+  }
+
+  $string.=pack('N', $extra_count);
+  $string.=$extra_string;
 
   sendUDP($string);
 }
